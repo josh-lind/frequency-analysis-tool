@@ -1,0 +1,57 @@
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+.letter-input {
+  width: 14px;
+  text-align: center;
+  font-family: source-code-pro, monospace;
+}
+
+.above-input-fields {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.input-fields {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.pt-letters {
+  font-family: source-code-pro, monospace;
+}
