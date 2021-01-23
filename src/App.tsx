@@ -1,11 +1,14 @@
 import React from 'react';
 import './App.scss';
 import './index.scss';
+import { FrequenciesContainer } from './models/FrequenciesContainer';
+import Frequencies from './Frequencies';
 
 type AppState = {
   unknownChar: string,
   userInput: string,
   cipherKey: TranslationChar[],
+  frequencies: FrequenciesContainer
 }
 
 type TranslationChar = {
@@ -48,10 +51,16 @@ const startingCipherKey = [
 class App extends React.Component<{}, AppState> {
   constructor(props: any) {
     super(props);
+
     this.state = {
       unknownChar: '.',
       userInput: '',
-      cipherKey: startingCipherKey
+      cipherKey: startingCipherKey,
+      frequencies: {
+        plainChar: this.getMostCommonLetters(),
+        plainDi: [],
+        plainTri: this.getMostCommonTriGrams()
+      }
     };
 
     this.updateUnknownChar = this.updateUnknownChar.bind(this);
@@ -114,6 +123,39 @@ class App extends React.Component<{}, AppState> {
     this.setState({cipherKey});
   }
 
+  render() {
+    return (
+      <div className="app">
+        <div className="nav-bar container">
+          <h2>Frequency Analysis Tool</h2>
+        </div>
+        <div className="container">
+          <div className="frequencies-container">
+            *All percentages listed below refer to relative frequencies of the letters<br/>
+            <Frequencies container={this.state.frequencies} />
+          </div>
+          <div className="above-input-fields">
+            <div>
+              Unknown Letter:{' '}
+              <input type="text" className="letter-input" value={this.state.unknownChar} onChange={this.updateUnknownChar} />
+            </div>
+            <div style={{marginLeft: '12px'}}>
+              Remaining Ciphertext Letters: {this.getUnsolvedCTChars()}
+            </div>
+          </div>
+          <div className="above-input-fields">
+            {this.state.cipherKey.map(tc => this.getLetterJsx(tc))}
+          </div>
+          <div className="input-fields">
+            <textarea value={this.state.userInput} onChange={this.updateUserInput} cols={numCols} rows={numRows}></textarea>
+            <textarea value={this.getTranslationWithBlanks()} cols={numCols} rows={numRows}></textarea>
+            <textarea value={this.getTranslationWithoutBlanks()} cols={numCols} rows={numRows}></textarea>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   getMostCommonLetters() {
     return [
       {text: 'E', frequency: 1},
@@ -145,37 +187,36 @@ class App extends React.Component<{}, AppState> {
     ]
   }
 
-  render() {
-    return (
-      <div className="app">
-        <div className="nav-bar container">
-          <h2>Frequency Analysis Tool</h2>
-        </div>
-        <div className="container">
-          <div className="frequencies-container">
-            stuff
-          </div>
-          <div className="above-input-fields">
-            <div>
-              Unknown Letter:{' '}
-              <input type="text" className="letter-input" value={this.state.unknownChar} onChange={this.updateUnknownChar} />
-            </div>
-            <div style={{marginLeft: '12px'}}>
-              Remaining Ciphertext Letters: {this.getUnsolvedCTChars()}
-            </div>
-          </div>
-          <div className="above-input-fields">
-            {this.state.cipherKey.map(tc => this.getLetterJsx(tc))}
-          </div>
-          <div className="input-fields">
-            <textarea value={this.state.userInput} onChange={this.updateUserInput} cols={numCols} rows={numRows}></textarea>
-            <textarea value={this.getTranslationWithBlanks()} cols={numCols} rows={numRows}></textarea>
-            <textarea value={this.getTranslationWithoutBlanks()} cols={numCols} rows={numRows}></textarea>
-          </div>
-        </div>
-      </div>
-    )
+  getMostCommonTriGrams() {
+    return [
+      {text: 'THE', frequency: 1},
+      {text: 'AND', frequency: .464},
+      {text: 'ING', frequency: .337},
+      {text: 'HER', frequency: .31},
+      {text: 'THA', frequency: .224},
+      {text: 'ERE', frequency: .21},
+      {text: 'HIS', frequency: .199},
+      {text: 'HAT', frequency: .187},
+      {text: 'ENT', frequency: .171},
+      {text: 'NTH', frequency: .17},
+      {text: 'DTH', frequency: .161},
+      {text: 'ETH', frequency: .157},
+      {text: 'FOR', frequency: .154},
+      {text: 'YOU', frequency: .153},
+      {text: 'ITH', frequency: .15},
+      {text: 'WAS', frequency: .147},
+      {text: 'INT', frequency: .14},
+      {text: 'THI', frequency: .138},
+      {text: 'SHE', frequency: .136},
+      {text: 'OTH', frequency: .135},
+      {text: 'TER', frequency: .131},
+      {text: 'WIT', frequency: .13},
+      {text: 'HES', frequency: .13},
+      {text: 'ION', frequency: .128},
+      {text: 'VER', frequency: .125},
+    ]
   }
+
 }
 
 export default App;

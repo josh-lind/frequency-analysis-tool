@@ -1,0 +1,23 @@
+table.singleTable,
+.singleTable th,
+.singleTable td {
+    border: 1px #555 solid;
+    border-collapse: collapse;
+}
+
+.singleTable {
+    border-radius: 5px;
+}
+
+.singleTable td {
+    font-family: source-code-pro, monospace;
+    font-size: 14px;
+    text-align: right;
+    padding: 0 4px;
+}
+
+.table-div {
+    display: inline-block;
+    padding-right: 4px;
+    vertical-align: top;
+}
