@@ -13,7 +13,8 @@ type AppState = {
   translationWithBlanks: string,
   translationWithoutBlanks: string,
   cipherKey: TranslationChar[],
-  frequencies: FrequenciesContainer
+  frequencies: FrequenciesContainer,
+  remainingCTChars: string
 }
 
 type TranslationChar = {
@@ -69,12 +70,14 @@ class App extends React.Component<{}, AppState> {
         plainChar: this.getMostCommonLetters(),
         plainDi: this.getMostCommonDigrams(),
         plainTri: this.getMostCommonTrigrams()
-      }
+      },
+      remainingCTChars: ''
     };
 
     this.updateUnknownChar = this.updateUnknownChar.bind(this);
     this.updateUserInput = this.updateUserInput.bind(this);
     this.getUnsolvedCTChars = this.getUnsolvedCTChars.bind(this);
+    this.updateRemainingCTChars = this.updateRemainingCTChars.bind(this);
     this.updateTranslationWithBlanks = this.updateTranslationWithBlanks.bind(this);
     this.updateTranslationWithoutBlanks = this.updateTranslationWithoutBlanks.bind(this);
     this.getLetterJsx = this.getLetterJsx.bind(this);
@@ -85,6 +88,16 @@ class App extends React.Component<{}, AppState> {
   updateUnknownChar(event: any) {
     const newChar = event.target.value;
     this.setState({ unknownChar: newChar });
+
+    timeoutsRunning2++;
+    setTimeout(() => {
+      timeoutsRunning2--;
+      if (timeoutsRunning2 === 0) {
+        this.updateTranslationWithBlanks();
+        this.updateTranslationWithoutBlanks();
+        this.updateRemainingCTChars();
+      }
+    }, 1000);
   }
 
   updateUserInput(event: any) {
@@ -98,6 +111,7 @@ class App extends React.Component<{}, AppState> {
         this.updateCipherFrequencies();
         this.updateTranslationWithBlanks();
         this.updateTranslationWithoutBlanks();
+        this.updateRemainingCTChars();
       }
     }, 1000);
   }
@@ -174,6 +188,31 @@ class App extends React.Component<{}, AppState> {
     return '';
   }
 
+  updateRemainingCTChars() {
+    const text = this.state.userInput;
+    let remainingCTChars;
+    if (!text) {
+      remainingCTChars = '';
+    } else {
+      const uniqueChars: any = {};
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (!uniqueChars[ch]) uniqueChars[ch] = 1;
+      }
+      let chars: string[] = [];
+      for (const prop in uniqueChars) {
+        chars.push(prop);
+      }
+      this.state.cipherKey.forEach(key => {
+        chars = chars.filter(x => x !== key.cipher);
+      });
+      chars = chars.sort();
+      remainingCTChars = chars.join(' ');
+    }
+
+    this.setState({remainingCTChars});
+  }
+
   updateTranslationWithBlanks() {
     let text = this.state.userInput;
     this.state.cipherKey.forEach(keyChar => {
@@ -196,7 +235,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   getLetterJsx(tc: TranslationChar): JSX.Element {
-    return <div style={{ textAlign: 'center' }}>
+    return <div style={{ textAlign: 'center' }} key={tc.plain}>
       <div className="pt-letters">{tc.plain}</div>
       <div style={{ margin: '0 2px' }}>
         <input type="text" key={tc.plain} value={tc.cipher} className="letter-input"
@@ -216,6 +255,7 @@ class App extends React.Component<{}, AppState> {
       if (timeoutsRunning2 === 0) {
         this.updateTranslationWithBlanks();
         this.updateTranslationWithoutBlanks();
+        this.updateRemainingCTChars();
       }
     }, 1000);
   }
@@ -227,7 +267,7 @@ class App extends React.Component<{}, AppState> {
           <div className="container">
             <div className="nav-flex">
               <div style={{ fontSize: '1.2em' }}><b>OSU.</b>EDU</div>
-              <div>Created by MRVK OLQG</div>
+              <div><a href="http://rumkin.com/tools/cipher/manipulate.php" style={{marginRight: '1.5em'}}>External Text Manipulator</a> Site created by MRVK OLQG</div>
             </div>
           </div>
         </div>
@@ -246,17 +286,17 @@ class App extends React.Component<{}, AppState> {
               Unknown Letter:{' '}
               <input type="text" className="letter-input" value={this.state.unknownChar} onChange={this.updateUnknownChar} />
             </div>
-            {/* <div style={{marginLeft: '12px'}}>
-              Remaining Ciphertext Letters: {this.getUnsolvedCTChars()}
-            </div> */}
+            <div style={{marginLeft: '12px'}}>
+              Remaining Ciphertext Letters: <span className="code">{this.state.remainingCTChars}</span>
+            </div>
           </div>
           <div className="above-input-fields">
             {this.state.cipherKey.map(tc => this.getLetterJsx(tc))}
           </div>
           <div className="input-fields">
             <textarea value={this.state.userInput} onChange={this.updateUserInput} cols={numCols} rows={numRows}></textarea>
-            <textarea value={this.state.translationWithBlanks} cols={numCols} rows={numRows}></textarea>
-            <textarea value={this.state.translationWithoutBlanks} cols={numCols} rows={numRows}></textarea>
+            <textarea readOnly value={this.state.translationWithBlanks} cols={numCols} rows={numRows}></textarea>
+            <textarea readOnly value={this.state.translationWithoutBlanks} cols={numCols} rows={numRows}></textarea>
           </div>
         </div>
       </div>

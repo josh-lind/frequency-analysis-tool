@@ -22,7 +22,7 @@ const getColorStyle = (fr: number, yellow?: boolean) => {
 }
 
 const letterRows = (freqs: SingleFrequency[], yellow?: boolean) => {
-    return freqs.map(singleFr => <tr>
+    return freqs.map(singleFr => <tr key={singleFr.text}>
         <td style={getColorStyle(singleFr.frequency, yellow)}>{singleFr.text}</td>
         <td style={getColorStyle(singleFr.frequency, yellow)}>{getPercent(singleFr.frequency)}</td>
     </tr>)
@@ -48,7 +48,7 @@ const getTable = (title: string, subtitle: string, singleFrs: SingleFrequency[],
 }
 
 const letterRowsDigraph = (freqs: DigraphFrequency[], yellow?: boolean) => {
-    return freqs.map(diFr => <tr>
+    return freqs.map(diFr => <tr key={diFr.text}>
         <td style={getColorStyle(diFr.frequency, yellow)}>
             <div className="flex-inside-td">
                 <div>{diFr.text}</div>
