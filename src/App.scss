@@ -55,3 +55,23 @@
 .pt-letters {
   font-family: source-code-pro, monospace;
 }
+
+.nav-bar {
+  width: 100%;
+  background-image: linear-gradient(#eee, #bbb);
+  border-bottom: #a00 6px solid;
+}
+
+.nav-flex {
+  display: flex;
+  padding: 6px 32px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5em;
+}

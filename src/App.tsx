@@ -5,6 +5,7 @@ import { FrequenciesContainer } from './models/FrequenciesContainer';
 import Frequencies from './Frequencies';
 import { SingleFrequency } from './models/SingleFrequency';
 import { DigraphFrequency } from './models/DigraphFrequency';
+import logoWithText from './assets/osu-32px-horiz.png';
 
 type AppState = {
   unknownChar: string,
@@ -88,7 +89,7 @@ class App extends React.Component<{}, AppState> {
 
   updateUserInput(event: any) {
     const userInput = event.target.value;
-    this.setState({userInput});
+    this.setState({ userInput });
 
     timeoutsRunning++;
     setTimeout(() => {
@@ -104,11 +105,11 @@ class App extends React.Component<{}, AppState> {
   updateCipherFrequencies() {
     const text = this.state.userInput;
     if (text.length < 10) return;
-    const frequencies = {...this.state.frequencies};
+    const frequencies = { ...this.state.frequencies };
     frequencies.cipherChar = this.getCipherSingleFrs(text);
     frequencies.cipherDi = this.getCipherDiFrs(text);
     frequencies.cipherTri = this.getCipherTriFrs(text);
-    this.setState({frequencies});
+    this.setState({ frequencies });
   }
 
   getCipherSingleFrs(text: string): SingleFrequency[] {
@@ -181,7 +182,7 @@ class App extends React.Component<{}, AppState> {
       }
     });
     text = text.replaceAll(/[A-Z]/g, this.state.unknownChar);
-    this.setState({translationWithBlanks: text});
+    this.setState({ translationWithBlanks: text });
   }
 
   updateTranslationWithoutBlanks() {
@@ -191,14 +192,14 @@ class App extends React.Component<{}, AppState> {
         text = text.replaceAll(keyChar.cipher, keyChar.plain);
       }
     });
-    this.setState({translationWithoutBlanks: text});
+    this.setState({ translationWithoutBlanks: text });
   }
 
   getLetterJsx(tc: TranslationChar): JSX.Element {
-    return <div style={{textAlign: 'center'}}>
+    return <div style={{ textAlign: 'center' }}>
       <div className="pt-letters">{tc.plain}</div>
-      <div style={{margin: '0 2px'}}>
-        <input type="text" key={tc.plain} value={tc.cipher} className="letter-input" 
+      <div style={{ margin: '0 2px' }}>
+        <input type="text" key={tc.plain} value={tc.cipher} className="letter-input"
           onChange={(event) => this.updateTranslationChars(event.target.value, tc)} />
       </div>
     </div>
@@ -207,7 +208,7 @@ class App extends React.Component<{}, AppState> {
   updateTranslationChars(cipherChar: string, tc: TranslationChar) {
     const cipherKey = [...this.state.cipherKey];
     (cipherKey.find(x => x.plain === tc.plain) as TranslationChar).cipher = cipherChar;
-    this.setState({cipherKey});
+    this.setState({ cipherKey });
 
     timeoutsRunning2++;
     setTimeout(() => {
@@ -222,12 +223,22 @@ class App extends React.Component<{}, AppState> {
   render() {
     return (
       <div className="app">
-        <div className="nav-bar container">
-          <h2>Frequency Analysis Tool</h2>
+        <div className="nav-bar">
+          <div className="container">
+            <div className="nav-flex">
+              <div style={{ fontSize: '1.2em' }}><b>OSU.</b>EDU</div>
+              <div>Created by MRVK OLQG</div>
+            </div>
+          </div>
         </div>
-        <div className="container">
+        <div className="header container">
+          <h1 style={{ margin: '0' }}>Frequency Analysis Tool</h1>
+          <img src={logoWithText} alt="OSU Logo" />
+        </div>
+        <div className="container" style={{ marginBottom: '2em' }}>
           <div className="frequencies-container">
-            <p>*All percentages listed below refer to relative frequencies</p>
+            <p style={{ fontSize: '.8em', margin: '12px 0 0' }}>*All percentages listed below refer to relative frequencies</p>
+            <p style={{ fontSize: '.8em', margin: '0 0 4px' }}>*Green tables refer to actual frequency, yellow refer to calculated</p>
             <Frequencies container={this.state.frequencies} />
           </div>
           <div className="above-input-fields">
@@ -254,32 +265,32 @@ class App extends React.Component<{}, AppState> {
 
   getMostCommonLetters() {
     return [
-      {text: 'E', frequency: 1},
-      {text: 'T', frequency: .757},
-      {text: 'A', frequency: .675},
-      {text: 'O', frequency: .639},
-      {text: 'I', frequency: .609},
-      {text: 'N', frequency: .578},
-      {text: 'S', frequency: .522},
-      {text: 'R', frequency: .5},
-      {text: 'H', frequency: .492},
-      {text: 'D', frequency: .359},
-      {text: 'L', frequency: .331},
-      {text: 'U', frequency: .239},
-      {text: 'C', frequency: .225},
-      {text: 'M', frequency: .217},
-      {text: 'F', frequency: .191},
-      {text: 'Y', frequency: .175},
-      {text: 'W', frequency: .174},
-      {text: 'G', frequency: .168},
-      {text: 'P', frequency: .151},
-      {text: 'B', frequency: .123},
-      {text: 'V', frequency: .092},
-      {text: 'K', frequency: .057},
-      {text: 'X', frequency: .014},
-      {text: 'Q', frequency: .009},
-      {text: 'J', frequency: .008},
-      {text: 'Z', frequency: .005},
+      { text: 'E', frequency: 1 },
+      { text: 'T', frequency: .757 },
+      { text: 'A', frequency: .675 },
+      { text: 'O', frequency: .639 },
+      { text: 'I', frequency: .609 },
+      { text: 'N', frequency: .578 },
+      { text: 'S', frequency: .522 },
+      { text: 'R', frequency: .5 },
+      { text: 'H', frequency: .492 },
+      { text: 'D', frequency: .359 },
+      { text: 'L', frequency: .331 },
+      { text: 'U', frequency: .239 },
+      { text: 'C', frequency: .225 },
+      { text: 'M', frequency: .217 },
+      { text: 'F', frequency: .191 },
+      { text: 'Y', frequency: .175 },
+      { text: 'W', frequency: .174 },
+      { text: 'G', frequency: .168 },
+      { text: 'P', frequency: .151 },
+      { text: 'B', frequency: .123 },
+      { text: 'V', frequency: .092 },
+      { text: 'K', frequency: .057 },
+      { text: 'X', frequency: .014 },
+      { text: 'Q', frequency: .009 },
+      { text: 'J', frequency: .008 },
+      { text: 'Z', frequency: .005 },
     ]
   }
 
@@ -290,43 +301,56 @@ class App extends React.Component<{}, AppState> {
       { text: 'ER', frequency: .582, revText: 'RE', revFrequency: .442 },
       { text: 'IN', frequency: .553, revText: 'NI', revFrequency: .097 },
       { text: 'AN', frequency: .528, revText: 'NA', revFrequency: .119 },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
-      // { text: '', frequency: ., revText: '', revFrequency: . },
+      { text: 'RE', frequency: .582, revText: 'ER', revFrequency: .442 },
+      { text: 'ND', frequency: .403, revText: 'DN', revFrequency: .037 },
+      { text: 'ED', frequency: .402, revText: 'DE', revFrequency: .182 },
+      { text: 'ES', frequency: .368, revText: 'SE', revFrequency: .225 },
+      { text: 'EN', frequency: .359, revText: 'NE', revFrequency: .202 },
+      { text: 'HA', frequency: .358, revText: 'AH', revFrequency: .013 },
+      { text: 'ON', frequency: .341, revText: 'NO', revFrequency: .182 },
+      { text: 'TO', frequency: .339, revText: 'OT', revFrequency: .168 },
+      { text: 'EA', frequency: .338, revText: 'AE', revFrequency: .001 },
+      { text: 'OU', frequency: .336, revText: 'UO', revFrequency: .003 },
+      { text: 'NT', frequency: .329, revText: 'TN', revFrequency: .017 },
+      { text: 'AT', frequency: .327, revText: 'TA', revFrequency: .169 },
+      { text: 'ST', frequency: .324, revText: 'TS', revFrequency: .103 },
+      { text: 'HI', frequency: .299, revText: 'IH', revFrequency: .015 },
+      { text: 'IT', frequency: .288, revText: 'TI', revFrequency: .25 },
+      { text: 'IS', frequency: .28, revText: 'SI', revFrequency: .161 },
+      { text: 'AS', frequency: .275, revText: 'SA', revFrequency: .196 },
+      { text: 'NG', frequency: .272, revText: 'GN', revFrequency: .011 },
+      { text: 'OR', frequency: .269, revText: 'RO', revFrequency: .184 },
+      { text: 'ET', frequency: .263, revText: 'TE', revFrequency: .255 },
     ]
   }
 
   getMostCommonTrigrams() {
     return [
-      {text: 'THE', frequency: 1},
-      {text: 'AND', frequency: .464},
-      {text: 'ING', frequency: .337},
-      {text: 'HER', frequency: .31},
-      {text: 'THA', frequency: .224},
-      {text: 'ERE', frequency: .21},
-      {text: 'HIS', frequency: .199},
-      {text: 'HAT', frequency: .187},
-      {text: 'ENT', frequency: .171},
-      {text: 'NTH', frequency: .17},
-      {text: 'DTH', frequency: .161},
-      {text: 'ETH', frequency: .157},
-      {text: 'FOR', frequency: .154},
-      {text: 'YOU', frequency: .153},
-      {text: 'ITH', frequency: .15},
-      {text: 'WAS', frequency: .147},
-      {text: 'INT', frequency: .14},
-      {text: 'THI', frequency: .138},
-      {text: 'SHE', frequency: .136},
-      {text: 'OTH', frequency: .135},
-      {text: 'TER', frequency: .131},
-      {text: 'WIT', frequency: .13},
-      {text: 'HES', frequency: .13},
-      {text: 'ION', frequency: .128},
-      {text: 'VER', frequency: .125},
+      { text: 'THE', frequency: 1 },
+      { text: 'AND', frequency: .464 },
+      { text: 'ING', frequency: .337 },
+      { text: 'HER', frequency: .31 },
+      { text: 'THA', frequency: .224 },
+      { text: 'ERE', frequency: .21 },
+      { text: 'HIS', frequency: .199 },
+      { text: 'HAT', frequency: .187 },
+      { text: 'ENT', frequency: .171 },
+      { text: 'NTH', frequency: .17 },
+      { text: 'DTH', frequency: .161 },
+      { text: 'ETH', frequency: .157 },
+      { text: 'FOR', frequency: .154 },
+      { text: 'YOU', frequency: .153 },
+      { text: 'ITH', frequency: .15 },
+      { text: 'WAS', frequency: .147 },
+      { text: 'INT', frequency: .14 },
+      { text: 'THI', frequency: .138 },
+      { text: 'SHE', frequency: .136 },
+      { text: 'OTH', frequency: .135 },
+      { text: 'TER', frequency: .131 },
+      { text: 'WIT', frequency: .13 },
+      { text: 'HES', frequency: .13 },
+      { text: 'ION', frequency: .128 },
+      { text: 'VER', frequency: .125 },
     ]
   }
 
