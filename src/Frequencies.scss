@@ -21,3 +21,9 @@ table.singleTable,
     padding-right: 4px;
     vertical-align: top;
 }
+
+.flex-inside-td {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}

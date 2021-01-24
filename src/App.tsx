@@ -3,10 +3,14 @@ import './App.scss';
 import './index.scss';
 import { FrequenciesContainer } from './models/FrequenciesContainer';
 import Frequencies from './Frequencies';
+import { SingleFrequency } from './models/SingleFrequency';
+import { DigraphFrequency } from './models/DigraphFrequency';
 
 type AppState = {
   unknownChar: string,
   userInput: string,
+  translationWithBlanks: string,
+  translationWithoutBlanks: string,
   cipherKey: TranslationChar[],
   frequencies: FrequenciesContainer
 }
@@ -18,6 +22,8 @@ type TranslationChar = {
 
 const numRows = 20;
 const numCols = 45;
+let timeoutsRunning = 0;
+let timeoutsRunning2 = 0;
 
 const startingCipherKey = [
   { plain: 'a', cipher: '' },
@@ -55,21 +61,24 @@ class App extends React.Component<{}, AppState> {
     this.state = {
       unknownChar: '.',
       userInput: '',
+      translationWithBlanks: '',
+      translationWithoutBlanks: '',
       cipherKey: startingCipherKey,
       frequencies: {
         plainChar: this.getMostCommonLetters(),
-        plainDi: [],
-        plainTri: this.getMostCommonTriGrams()
+        plainDi: this.getMostCommonDigrams(),
+        plainTri: this.getMostCommonTrigrams()
       }
     };
 
     this.updateUnknownChar = this.updateUnknownChar.bind(this);
     this.updateUserInput = this.updateUserInput.bind(this);
     this.getUnsolvedCTChars = this.getUnsolvedCTChars.bind(this);
-    this.getTranslationWithBlanks = this.getTranslationWithBlanks.bind(this);
-    this.getTranslationWithoutBlanks = this.getTranslationWithoutBlanks.bind(this);
+    this.updateTranslationWithBlanks = this.updateTranslationWithBlanks.bind(this);
+    this.updateTranslationWithoutBlanks = this.updateTranslationWithoutBlanks.bind(this);
     this.getLetterJsx = this.getLetterJsx.bind(this);
     this.updateTranslationChars = this.updateTranslationChars.bind(this);
+    this.updateCipherFrequencies = this.updateCipherFrequencies.bind(this);
   }
 
   updateUnknownChar(event: any) {
@@ -80,13 +89,91 @@ class App extends React.Component<{}, AppState> {
   updateUserInput(event: any) {
     const userInput = event.target.value;
     this.setState({userInput});
+
+    timeoutsRunning++;
+    setTimeout(() => {
+      timeoutsRunning--;
+      if (timeoutsRunning === 0) {
+        this.updateCipherFrequencies();
+        this.updateTranslationWithBlanks();
+        this.updateTranslationWithoutBlanks();
+      }
+    }, 1000);
+  }
+
+  updateCipherFrequencies() {
+    const text = this.state.userInput;
+    if (text.length < 10) return;
+    const frequencies = {...this.state.frequencies};
+    frequencies.cipherChar = this.getCipherSingleFrs(text);
+    frequencies.cipherDi = this.getCipherDiFrs(text);
+    frequencies.cipherTri = this.getCipherTriFrs(text);
+    this.setState({frequencies});
+  }
+
+  getCipherSingleFrs(text: string): SingleFrequency[] {
+    const dict: any = {};
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (dict[ch]) dict[ch]++;
+      else dict[ch] = 1;
+    }
+    const sfs: SingleFrequency[] = [];
+    for (const field in dict) {
+      sfs.push({ text: field, frequency: dict[field] });
+    }
+    sfs.sort((a, b) => b.frequency - a.frequency);
+    const max = sfs[0].frequency;
+    sfs.forEach(el => el.frequency /= max);
+    return sfs;
+  }
+
+  getCipherDiFrs(text: string): DigraphFrequency[] {
+    const dict: any = {};
+    for (let i = 0; i < text.length - 1; i++) {
+      const ch = text.substr(i, 2);
+      if (dict[ch]) dict[ch]++;
+      else dict[ch] = 1;
+    }
+    let dfArr: DigraphFrequency[] = [];
+    for (const field in dict) {
+      const revText = field.split("").reverse().join("");
+      const revFrequency = dict[revText] ? dict[revText] : 0;
+      dfArr.push({ text: field, frequency: dict[field], revText, revFrequency });
+    }
+    dfArr.sort((a, b) => b.frequency - a.frequency);
+    dfArr = dfArr.slice(0, 25);
+    const max = dfArr[0].frequency;
+    dfArr.forEach(el => {
+      el.frequency /= max;
+      el.revFrequency /= max;
+    });
+    return dfArr;
+  }
+
+  getCipherTriFrs(text: string): SingleFrequency[] {
+    const dict: any = {};
+    for (let i = 0; i < text.length - 2; i++) {
+      const str = text.substr(i, 3);
+      if (dict[str]) dict[str]++;
+      else dict[str] = 1;
+    }
+    let sfArr: SingleFrequency[] = [];
+    for (const field in dict) {
+      sfArr.push({ text: field, frequency: dict[field] });
+    }
+    sfArr.sort((a, b) => b.frequency - a.frequency);
+    sfArr = sfArr.slice(0, 25);
+    const max = sfArr[0].frequency;
+    sfArr.forEach(el => el.frequency /= max);
+    return sfArr;
   }
 
   getUnsolvedCTChars(): string {
     return '';
   }
 
-  getTranslationWithBlanks(): string {
+  updateTranslationWithBlanks() {
     let text = this.state.userInput;
     this.state.cipherKey.forEach(keyChar => {
       if (keyChar.cipher) {
@@ -94,17 +181,17 @@ class App extends React.Component<{}, AppState> {
       }
     });
     text = text.replaceAll(/[A-Z]/g, this.state.unknownChar);
-    return text;
+    this.setState({translationWithBlanks: text});
   }
 
-  getTranslationWithoutBlanks(): string {
+  updateTranslationWithoutBlanks() {
     let text = this.state.userInput;
     this.state.cipherKey.forEach(keyChar => {
       if (keyChar.cipher) {
         text = text.replaceAll(keyChar.cipher, keyChar.plain);
       }
     });
-    return text;
+    this.setState({translationWithoutBlanks: text});
   }
 
   getLetterJsx(tc: TranslationChar): JSX.Element {
@@ -121,6 +208,15 @@ class App extends React.Component<{}, AppState> {
     const cipherKey = [...this.state.cipherKey];
     (cipherKey.find(x => x.plain === tc.plain) as TranslationChar).cipher = cipherChar;
     this.setState({cipherKey});
+
+    timeoutsRunning2++;
+    setTimeout(() => {
+      timeoutsRunning2--;
+      if (timeoutsRunning2 === 0) {
+        this.updateTranslationWithBlanks();
+        this.updateTranslationWithoutBlanks();
+      }
+    }, 1000);
   }
 
   render() {
@@ -131,7 +227,7 @@ class App extends React.Component<{}, AppState> {
         </div>
         <div className="container">
           <div className="frequencies-container">
-            *All percentages listed below refer to relative frequencies of the letters<br/>
+            <p>*All percentages listed below refer to relative frequencies</p>
             <Frequencies container={this.state.frequencies} />
           </div>
           <div className="above-input-fields">
@@ -139,17 +235,17 @@ class App extends React.Component<{}, AppState> {
               Unknown Letter:{' '}
               <input type="text" className="letter-input" value={this.state.unknownChar} onChange={this.updateUnknownChar} />
             </div>
-            <div style={{marginLeft: '12px'}}>
+            {/* <div style={{marginLeft: '12px'}}>
               Remaining Ciphertext Letters: {this.getUnsolvedCTChars()}
-            </div>
+            </div> */}
           </div>
           <div className="above-input-fields">
             {this.state.cipherKey.map(tc => this.getLetterJsx(tc))}
           </div>
           <div className="input-fields">
             <textarea value={this.state.userInput} onChange={this.updateUserInput} cols={numCols} rows={numRows}></textarea>
-            <textarea value={this.getTranslationWithBlanks()} cols={numCols} rows={numRows}></textarea>
-            <textarea value={this.getTranslationWithoutBlanks()} cols={numCols} rows={numRows}></textarea>
+            <textarea value={this.state.translationWithBlanks} cols={numCols} rows={numRows}></textarea>
+            <textarea value={this.state.translationWithoutBlanks} cols={numCols} rows={numRows}></textarea>
           </div>
         </div>
       </div>
@@ -187,7 +283,24 @@ class App extends React.Component<{}, AppState> {
     ]
   }
 
-  getMostCommonTriGrams() {
+  getMostCommonDigrams() {
+    return [
+      { text: 'TH', frequency: 1, revText: 'HT', revFrequency: .097 },
+      { text: 'HE', frequency: .93, revText: 'EH', revFrequency: .101 },
+      { text: 'ER', frequency: .582, revText: 'RE', revFrequency: .442 },
+      { text: 'IN', frequency: .553, revText: 'NI', revFrequency: .097 },
+      { text: 'AN', frequency: .528, revText: 'NA', revFrequency: .119 },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+      // { text: '', frequency: ., revText: '', revFrequency: . },
+    ]
+  }
+
+  getMostCommonTrigrams() {
     return [
       {text: 'THE', frequency: 1},
       {text: 'AND', frequency: .464},
