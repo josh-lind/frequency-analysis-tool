@@ -277,8 +277,7 @@ class App extends React.Component<{}, AppState> {
         </div>
         <div className="container" style={{ marginBottom: '2em' }}>
           <div className="frequencies-container">
-            <p style={{ fontSize: '.8em', margin: '12px 0 0' }}>*All percentages listed below refer to relative frequencies</p>
-            <p style={{ fontSize: '.8em', margin: '0 0 4px' }}>*Green tables refer to actual frequency, yellow refer to calculated</p>
+            <p style={{ fontSize: '.8em', margin: '12px 0 4px' }}>*All percentages listed below refer to relative frequencies</p>
             <Frequencies container={this.state.frequencies} />
           </div>
           <div className="above-input-fields">

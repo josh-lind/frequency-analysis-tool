@@ -14,48 +14,48 @@ const getPercent = (fr: number) => {
     return num + '%';
 }
 
-const getColorStyle = (fr: number, yellow?: boolean) => {
-    const bg = yellow ? `rgba(255, 255, 0, ${fr})` : `rgba(0, 255, 0, ${fr})`;
+const getColorStyle = (fr: number, blue?: boolean) => {
+    const bg = blue ? `rgba(153, 204, 255, ${fr})` : `rgba(255, 168, 78, ${fr})`;
     return {
         background: bg
     }
 }
 
-const letterRows = (freqs: SingleFrequency[], yellow?: boolean) => {
+const letterRows = (freqs: SingleFrequency[], blue?: boolean) => {
     return freqs.map(singleFr => <tr key={singleFr.text}>
-        <td style={getColorStyle(singleFr.frequency, yellow)}>{singleFr.text}</td>
-        <td style={getColorStyle(singleFr.frequency, yellow)}>{getPercent(singleFr.frequency)}</td>
+        <td style={getColorStyle(singleFr.frequency, blue)}>{singleFr.text}</td>
+        <td style={getColorStyle(singleFr.frequency, blue)}>{getPercent(singleFr.frequency)}</td>
     </tr>)
 };
 
-const getTable = (title: string, subtitle: string, singleFrs: SingleFrequency[], yellow?: boolean) => {
+const getTable = (title: string, subtitle: string, singleFrs: SingleFrequency[], blue?: boolean) => {
     return (
         <div className="table-div">
             <table className="singleTable">
                 <tbody>
                     <tr>
-                        <th colSpan={2}>{title}</th>
+                        <th colSpan={2} style={{maxWidth: '170px'}}>{title}</th>
                     </tr>
                     <tr>
                         <th>{subtitle}</th>
                         <th>Frequency</th>
                     </tr>
-                    {letterRows(singleFrs, yellow)}
+                    {letterRows(singleFrs, blue)}
                 </tbody>
             </table>
         </div>
     )
 }
 
-const letterRowsDigraph = (freqs: DigraphFrequency[], yellow?: boolean) => {
+const letterRowsDigraph = (freqs: DigraphFrequency[], blue?: boolean) => {
     return freqs.map(diFr => <tr key={diFr.text}>
-        <td style={getColorStyle(diFr.frequency, yellow)}>
+        <td style={getColorStyle(diFr.frequency, blue)}>
             <div className="flex-inside-td">
                 <div>{diFr.text}</div>
                 <div>{getPercent(diFr.frequency)}</div>
             </div>
         </td>
-        <td style={getColorStyle(diFr.revFrequency, yellow)}>
+        <td style={getColorStyle(diFr.revFrequency, blue)}>
             <div className="flex-inside-td">
                 <div>{diFr.revText}</div>
                 <div>{getPercent(diFr.revFrequency)}</div>
@@ -64,19 +64,19 @@ const letterRowsDigraph = (freqs: DigraphFrequency[], yellow?: boolean) => {
     </tr>)
 };
 
-const getTableWithReverse = (diFrs: DigraphFrequency[], yellow?: boolean) => {
+const getTableWithReverse = (diFrs: DigraphFrequency[], title: string, blue?: boolean) => {
     return (
         <div className="table-div">
             <table className="singleTable">
                 <tbody>
                     <tr>
-                        <th colSpan={2}>Common digraphs</th>
+                        <th colSpan={2} style={{maxWidth: '40px'}}>{title}</th>
                     </tr>
                     <tr>
                         <th>Digraph Fr</th>
                         <th>Reversed Fr</th>
                     </tr>
-                    {letterRowsDigraph(diFrs, yellow)}
+                    {letterRowsDigraph(diFrs, blue)}
                 </tbody>
             </table>
         </div>
@@ -85,12 +85,12 @@ const getTableWithReverse = (diFrs: DigraphFrequency[], yellow?: boolean) => {
 
 const Frequencies = ({ container }: FrequenciesProps): JSX.Element => {
     return <>
-        {getTable('Common letters', 'Letter', container.plainChar)}
-        {(container.cipherChar && container.cipherChar.length > 0) ? getTable('Common letters', 'Letter', container.cipherChar, true) : null}
-        {getTableWithReverse(container.plainDi)}
-        {(container.cipherDi && container.cipherDi.length > 0) ? getTableWithReverse(container.cipherDi, true) : null}
-        {getTable('Common trigraphs', 'Trigraph', container.plainTri)}
-        {(container.cipherTri && container.cipherTri.length > 0) ? getTable('Common trigraphs', 'Trigraph', container.cipherTri, true) : null}
+        {getTable('Regular English Unigram Frequencies', 'Letter', container.plainChar)}
+        {(container.cipherChar && container.cipherChar.length > 0) ? getTable('Ciphertext Unigram Frequencies', 'Letter', container.cipherChar, true) : null}
+        {getTableWithReverse(container.plainDi, 'Regular English Digram Frequencies')}
+        {(container.cipherDi && container.cipherDi.length > 0) ? getTableWithReverse(container.cipherDi, 'Ciphertext Digram Frequencies', true) : null}
+        {getTable('Regular English Trigram Frequencies', 'Trigram', container.plainTri)}
+        {(container.cipherTri && container.cipherTri.length > 0) ? getTable('Ciphertext Digram Frequencies', 'Trigram', container.cipherTri, true) : null}
     </>
 }
 
