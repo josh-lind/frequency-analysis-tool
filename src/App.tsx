@@ -266,7 +266,9 @@ class App extends React.Component<{}, AppState> {
     let text = this.state.userInput;
     text = text.replace(/\s+/g, '');
     text = text.toUpperCase();
-    this.setState({ userInput: text });
+    // event.target.value
+    const fakeEvent = { target: { value: text } };
+    this.updateUserInput(fakeEvent);
   }
 
   render() {
