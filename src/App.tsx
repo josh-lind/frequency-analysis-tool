@@ -83,6 +83,7 @@ class App extends React.Component<{}, AppState> {
     this.getLetterJsx = this.getLetterJsx.bind(this);
     this.updateTranslationChars = this.updateTranslationChars.bind(this);
     this.updateCipherFrequencies = this.updateCipherFrequencies.bind(this);
+    this.cleanInput = this.cleanInput.bind(this);
   }
 
   updateUnknownChar(event: any) {
@@ -189,7 +190,8 @@ class App extends React.Component<{}, AppState> {
   }
 
   updateRemainingCTChars() {
-    const text = this.state.userInput;
+    // const text = this.state.userInput;
+    const text = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let remainingCTChars;
     if (!text) {
       remainingCTChars = '';
@@ -260,6 +262,13 @@ class App extends React.Component<{}, AppState> {
     }, 1000);
   }
 
+  cleanInput() {
+    let text = this.state.userInput;
+    text = text.replace(/\s+/g, '');
+    text = text.toUpperCase();
+    this.setState({ userInput: text });
+  }
+
   render() {
     return (
       <div className="app">
@@ -291,6 +300,10 @@ class App extends React.Component<{}, AppState> {
           </div>
           <div className="above-input-fields">
             {this.state.cipherKey.map(tc => this.getLetterJsx(tc))}
+          </div>
+          <div style={{marginTop: '16px'}}>Please enter text in the first box below:</div>
+          <div>
+            <button onClick={this.cleanInput} className="btn-clean">Clean Input</button>
           </div>
           <div className="input-fields">
             <textarea value={this.state.userInput} onChange={this.updateUserInput} cols={numCols} rows={numRows}></textarea>
